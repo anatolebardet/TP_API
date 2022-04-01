@@ -8,7 +8,7 @@ public class VilleDao {
 
     private DaoFactory daoFactory;
 
-    VilleDao(DaoFactory daoFactory) {
+    public VilleDao(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -70,6 +70,8 @@ public class VilleDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
 
     }
 

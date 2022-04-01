@@ -2,10 +2,8 @@ package com.controller;
 
 import com.dao.DaoFactory;
 import com.dao.VilleDao;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.form.VilleSender;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -44,6 +42,24 @@ public class VilleController {
 		this.villeDao = daoFactory.getVilleDao();
 		villeDao.postVille(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
 	}
+
+	@RequestMapping(value = "/villepost", method = RequestMethod.POST)
+	@ResponseBody
+	public void post(@RequestBody String request) {
+
+		System.out.println("Request : "+request);
+
+		request.replace("+"," ");
+		String[] parts = request.split("&");
+		for (String part : parts){
+			System.out.println(part);
+		}
+		VilleSender ville = new VilleSender(request);
+		ville.sendVille();
+	}
+
+
+
 
 
 
