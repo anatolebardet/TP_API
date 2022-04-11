@@ -1,5 +1,7 @@
 package com.dao;
 
+import com.entities.VilleFrance;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +50,7 @@ public class VilleDao {
         return villes;
     }
 
-    public void postVille(String codeCommune, String nomCommune,String codePostal,String libelle,String ligne5,
-                          String latitude,String longitude) {
+    public void postVille(VilleFrance ville) {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         Statement statement = null;
@@ -58,24 +59,91 @@ public class VilleDao {
             statement = connexion.createStatement();
             preparedStatement = connexion.prepareStatement("INSERT INTO ville_france(Code_commune_INSEE, Nom_commune, " +
                     "Code_postal, Libelle_acheminement, Ligne_5, Latitude, Longitude) VALUES(?,?,?,?,?,?,?);");
-            preparedStatement.setString(1, codeCommune);
-            preparedStatement.setString(2, nomCommune);
-            preparedStatement.setString(3, codePostal);
-            preparedStatement.setString(4, libelle);
-            preparedStatement.setString(5, ligne5);
-            preparedStatement.setString(6, latitude);
-            preparedStatement.setString(7, longitude);
+            preparedStatement.setString(1, ville.getId());
+            preparedStatement.setString(2, ville.getNomCommune());
+            preparedStatement.setString(3, ville.getCodePostal());
+            preparedStatement.setString(4, ville.getLibelleAcheminement());
+            preparedStatement.setString(5, ville.getLigne5());
+            preparedStatement.setString(6, ville.getLatitude());
+            preparedStatement.setString(7, ville.getLongitude());
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 
+    public void deleteVille(String idDelete) {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        try {
+            connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=" +
+                    idDelete + ";");
+            System.out.println(preparedStatement);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public boolean villeExiste(String codeCommune){
+        boolean existe = false;
+        Connection connexion;
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        ResultSet resultat = null;
+        try {
+            connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+
+            resultat = statement.executeQuery("SELECT * FROM ville_france WHERE Code_commune_INSEE=" +
+                    codeCommune+";");
+            while (resultat.next()) {
+                if(resultat.getString("Code_commune_INSEE").equals(codeCommune)){
+                    existe = true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existe;
+    }
+
+    public void putVille(VilleFrance ville) {
+        if(villeExiste(ville.getId())){
+            editVille(ville);
+        }
+        else{
+            postVille(ville);
+        }
+    }
+
+    public void editVille(VilleFrance ville){
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        try {
+            connexion = daoFactory.getConnection();
+            statement = connexion.createStatement();
+            preparedStatement = connexion.prepareStatement("UPDATE ville_france SET Nom_commune = ?, Code_postal = ?, " +
+                    "Libelle_acheminement = ?, Ligne_5 = ?, Latitude = ?, Longitude = ? WHERE Code_commune_INSEE = ? ;");
+            System.out.println(preparedStatement);
+            preparedStatement.setString(1, ville.getNomCommune());
+            preparedStatement.setString(2, ville.getCodePostal());
+            preparedStatement.setString(3, ville.getLibelleAcheminement());
+            preparedStatement.setString(4, ville.getLigne5());
+            preparedStatement.setString(5, ville.getLatitude());
+            preparedStatement.setString(6, ville.getLongitude());
+            preparedStatement.setString(7, ville.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

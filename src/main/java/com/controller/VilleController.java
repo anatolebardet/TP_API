@@ -2,10 +2,12 @@ package com.controller;
 
 import com.dao.DaoFactory;
 import com.dao.VilleDao;
-import com.form.VilleSender;
+import com.entities.VilleFrance;
+import com.form.VilleDelete;
+import com.form.VillePost;
+import com.form.VillePut;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
 import java.util.List;
 
 @RestController
@@ -29,38 +31,54 @@ public class VilleController {
 		return villes.toString();
 	}
 
-	@RequestMapping(value="/ajoutVille", method=RequestMethod.GET)
-	public void get(@RequestParam(value="codeCommune") String codeCommune,
-					 @RequestParam(value="nomCommune") String nomCommune,
-					 @RequestParam(value="codePostal") String codePostal,
-					 @RequestParam(value="libelle") String libelle,
-					 @RequestParam(value="ligne5") String ligne5,
-					 @RequestParam(value="latitude") String latitude,
-					 @RequestParam(value="longitude") String longitude){
-
+	@RequestMapping(value="/getville", method=RequestMethod.GET)
+	public void get(@RequestParam("Code_commune_INSEE") String codeCommune,
+					@RequestParam("Nom_commune") String nomCommune,
+					@RequestParam(value="Code_postal") String codePostal,
+					@RequestParam(value="Libelle_acheminement") String libelle,
+					@RequestParam(value="Ligne_5") String ligne5,
+					@RequestParam(value="Latitude") String latitude,
+					@RequestParam(value="Longitude") String longitude){
+		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
 		DaoFactory daoFactory = DaoFactory.getInstance();
 		this.villeDao = daoFactory.getVilleDao();
-		villeDao.postVille(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
+		villeDao.postVille(ville);
 	}
 
-	@RequestMapping(value = "/villepost", method = RequestMethod.POST)
+	@PostMapping(value = "/villepost")
 	@ResponseBody
-	public void post(@RequestBody String request) {
-
-		System.out.println("Request : "+request);
-
-		request.replace("+"," ");
-		String[] parts = request.split("&");
-		for (String part : parts){
-			System.out.println(part);
-		}
-		VilleSender ville = new VilleSender(request);
-		ville.sendVille();
+	public void post(@RequestParam("Code_commune_INSEE") String codeCommune,
+					@RequestParam("Nom_commune") String nomCommune,
+					@RequestParam("Code_postal") String codePostal,
+					@RequestParam("Libelle_acheminement") String libelle,
+					@RequestParam("Ligne_5") String ligne5,
+					@RequestParam("Latitude") String latitude,
+					@RequestParam("Longitude") String longitude) {
+		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
+		VillePost villePost = new VillePost(ville);
+		villePost.postVille();
 	}
 
+	@DeleteMapping(value = "/villedelete{Code_commune_INSEE}")
+	@ResponseBody
+	public void delete(@RequestParam("Code_commune_INSEE") String Code_commune_INSEE) {
+		System.out.println("Code : " + Code_commune_INSEE);
+		VilleDelete ville = new VilleDelete(Code_commune_INSEE);
+		ville.deleteVille();
+	}
 
-
-
-
+	@PutMapping(value = "/villeput")
+	@ResponseBody
+	public void put(@RequestParam("Code_commune_INSEE") String codeCommune,
+					@RequestParam("Nom_commune") String nomCommune,
+					@RequestParam("Code_postal") String codePostal,
+					@RequestParam("Libelle_acheminement") String libelle,
+					@RequestParam("Ligne_5") String ligne5,
+					@RequestParam("Latitude") String latitude,
+					@RequestParam("Longitude") String longitude) {
+		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
+		VillePut villePut = new VillePut(ville);
+		villePut.putVille();
+	}
 
 }
