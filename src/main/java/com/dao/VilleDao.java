@@ -53,10 +53,8 @@ public class VilleDao {
     public void postVille(VilleFrance ville) {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
-        Statement statement = null;
         try {
             connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
             preparedStatement = connexion.prepareStatement("INSERT INTO ville_france(Code_commune_INSEE, Nom_commune, " +
                     "Code_postal, Libelle_acheminement, Ligne_5, Latitude, Longitude) VALUES(?,?,?,?,?,?,?);");
             preparedStatement.setString(1, ville.getId());
@@ -77,10 +75,8 @@ public class VilleDao {
     public void deleteVille(String idDelete) {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
-        Statement statement = null;
         try {
             connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
             preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=" +
                     idDelete + ";");
             System.out.println(preparedStatement);
@@ -93,13 +89,11 @@ public class VilleDao {
     public boolean villeExiste(String codeCommune){
         boolean existe = false;
         Connection connexion;
-        PreparedStatement preparedStatement = null;
         Statement statement = null;
         ResultSet resultat = null;
         try {
             connexion = daoFactory.getConnection();
             statement = connexion.createStatement();
-
             resultat = statement.executeQuery("SELECT * FROM ville_france WHERE Code_commune_INSEE=" +
                     codeCommune+";");
             while (resultat.next()) {
@@ -125,10 +119,8 @@ public class VilleDao {
     public void editVille(VilleFrance ville){
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
-        Statement statement = null;
         try {
             connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
             preparedStatement = connexion.prepareStatement("UPDATE ville_france SET Nom_commune = ?, Code_postal = ?, " +
                     "Libelle_acheminement = ?, Ligne_5 = ?, Latitude = ?, Longitude = ? WHERE Code_commune_INSEE = ? ;");
             System.out.println(preparedStatement);
