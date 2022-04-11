@@ -4,6 +4,8 @@ import com.dao.DaoFactory;
 import com.dao.VilleDao;
 import com.entities.VilleFrance;
 
+import java.sql.SQLException;
+
 public class VillePut {
 
     VilleFrance ville;
@@ -14,7 +16,7 @@ public class VillePut {
         this.dao = DaoFactory.getInstance();
     }
 
-    public void putVille(){
+    public void putVille() throws SQLException {
         VilleDao ville = this.dao.getVilleDao();
         ville.putVille(this.ville);
     }

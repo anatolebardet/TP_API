@@ -64,7 +64,6 @@ public class VilleDao {
             preparedStatement.setString(5, ville.getLigne5());
             preparedStatement.setString(6, ville.getLatitude());
             preparedStatement.setString(7, ville.getLongitude());
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,14 +78,13 @@ public class VilleDao {
             connexion = daoFactory.getConnection();
             preparedStatement = connexion.prepareStatement("DELETE FROM ville_france WHERE Code_commune_INSEE=" +
                     idDelete + ";");
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean villeExiste(String codeCommune){
+    public boolean villeExiste(String codeCommune) throws SQLException {
         boolean existe = false;
         Connection connexion;
         Statement statement = null;
@@ -103,11 +101,13 @@ public class VilleDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            statement.close();
         }
         return existe;
     }
 
-    public void putVille(VilleFrance ville) {
+    public void putVille(VilleFrance ville) throws SQLException {
         if(villeExiste(ville.getId())){
             editVille(ville);
         }
@@ -123,7 +123,6 @@ public class VilleDao {
             connexion = daoFactory.getConnection();
             preparedStatement = connexion.prepareStatement("UPDATE ville_france SET Nom_commune = ?, Code_postal = ?, " +
                     "Libelle_acheminement = ?, Ligne_5 = ?, Latitude = ?, Longitude = ? WHERE Code_commune_INSEE = ? ;");
-            System.out.println(preparedStatement);
             preparedStatement.setString(1, ville.getNomCommune());
             preparedStatement.setString(2, ville.getCodePostal());
             preparedStatement.setString(3, ville.getLibelleAcheminement());

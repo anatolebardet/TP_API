@@ -8,6 +8,7 @@ import com.form.VillePost;
 import com.form.VillePut;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -75,7 +76,7 @@ public class VilleController {
 					@RequestParam("Libelle_acheminement") String libelle,
 					@RequestParam("Ligne_5") String ligne5,
 					@RequestParam("Latitude") String latitude,
-					@RequestParam("Longitude") String longitude) {
+					@RequestParam("Longitude") String longitude) throws SQLException {
 		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
 		VillePut villePut = new VillePut(ville);
 		villePut.putVille();
