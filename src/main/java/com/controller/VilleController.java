@@ -32,7 +32,7 @@ public class VilleController {
 		return villes.toString();
 	}
 
-	@RequestMapping(value="/getville", method=RequestMethod.GET)
+	@RequestMapping(value="/villes", method=RequestMethod.GET)
 	public void get(@RequestParam("Code_commune_INSEE") String codeCommune,
 					@RequestParam("Nom_commune") String nomCommune,
 					@RequestParam(value="Code_postal") String codePostal,
@@ -46,7 +46,7 @@ public class VilleController {
 		villeDao.postVille(ville);
 	}
 
-	@PostMapping(value = "/villepost")
+	@PostMapping(value = "/ville")
 	@ResponseBody
 	public void post(@RequestParam("Code_commune_INSEE") String codeCommune,
 					@RequestParam("Nom_commune") String nomCommune,
@@ -60,7 +60,7 @@ public class VilleController {
 		villePost.postVille();
 	}
 
-	@DeleteMapping(value = "/villedelete{Code_commune_INSEE}")
+	@DeleteMapping(value = "/ville")
 	@ResponseBody
 	public void delete(@RequestParam("Code_commune_INSEE") String Code_commune_INSEE) {
 		System.out.println("Code : " + Code_commune_INSEE);
@@ -68,7 +68,7 @@ public class VilleController {
 		ville.deleteVille();
 	}
 
-	@PutMapping(value = "/villeput")
+	@PutMapping(value = "/ville")
 	@ResponseBody
 	public void put(@RequestParam("Code_commune_INSEE") String codeCommune,
 					@RequestParam("Nom_commune") String nomCommune,
