@@ -16,15 +16,9 @@ public class DaoFactory {
     }
 
     public static DaoFactory getInstance() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
 
-        }
-
-        DaoFactory instance = new DaoFactory(
+        return new DaoFactory(
                 "jdbc:mysql://localhost:3306/villes", "isengard", "network");
-        return instance;
     }
 
     public Connection getConnection() throws SQLException {

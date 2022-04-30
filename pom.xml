@@ -51,8 +51,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0.1</version>
+        </dependency>
 
-		<!-- Optionnel : Permet d'avoir des métriques Spring Boot -->
+        <!-- Optionnel : Permet d'avoir des métriques Spring Boot -->
 		<!-- 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

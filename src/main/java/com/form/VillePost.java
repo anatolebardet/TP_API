@@ -15,7 +15,7 @@ public class VillePost {
     }
 
     public void postVille(){
-        VilleDao ville = this.dao.getVilleDao();
-        ville.postVille(this.ville);
+        VilleDao villePost  = this.dao.getVilleDao();
+        villePost.postVille(this.ville);
     }
 }

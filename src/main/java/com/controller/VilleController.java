@@ -14,37 +14,20 @@ import java.util.List;
 @RestController
 public class VilleController {
 
-	private VilleDao villeDao;
+	@GetMapping(value="/villes", produces ="application/json;charset=UTF-8")
+	public List<VilleFrance> get(@RequestParam(required  = false,value="Code_commune_INSEE") String codeCommune,
+								@RequestParam(required  = false,value="Nom_commune") String nomCommune,
+								@RequestParam(required  = false,value="Code_postal") String codePostal,
+								@RequestParam(required  = false,value="Libelle_acheminement") String libelle,
+								@RequestParam(required  = false,value="Ligne_5") String ligne5,
+								@RequestParam(required  = false,value="Latitude") String latitude,
+								@RequestParam(required  = false,value="Longitude") String longitude){
 
-	// fonction pour récupérer le contenu de la BDD
-	@RequestMapping(value="/ville", method=RequestMethod.GET)
-	public String get(@RequestParam(required  = false, value="codePostal") String codePostal) {
 		DaoFactory daoFactory = DaoFactory.getInstance();
-		this.villeDao = daoFactory.getVilleDao();
-		List<String> villes = null;
-		if(codePostal != null){
-			villes = villeDao.getVillesCP(codePostal);
-		}
-		else{
-			villes  = villeDao.getVilles();
-		}
-
-		return villes.toString();
+		VilleDao villeDao = daoFactory.getVilleDao();
+		return villeDao.getVilles(codeCommune,nomCommune,codePostal,libelle,ligne5,latitude,longitude);
 	}
 
-	@RequestMapping(value="/villes", method=RequestMethod.GET)
-	public void get(@RequestParam("Code_commune_INSEE") String codeCommune,
-					@RequestParam("Nom_commune") String nomCommune,
-					@RequestParam(value="Code_postal") String codePostal,
-					@RequestParam(value="Libelle_acheminement") String libelle,
-					@RequestParam(value="Ligne_5") String ligne5,
-					@RequestParam(value="Latitude") String latitude,
-					@RequestParam(value="Longitude") String longitude){
-		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
-		DaoFactory daoFactory = DaoFactory.getInstance();
-		this.villeDao = daoFactory.getVilleDao();
-		villeDao.postVille(ville);
-	}
 
 	@PostMapping(value = "/ville")
 	@ResponseBody
@@ -62,9 +45,8 @@ public class VilleController {
 
 	@DeleteMapping(value = "/ville")
 	@ResponseBody
-	public void delete(@RequestParam("Code_commune_INSEE") String Code_commune_INSEE) {
-		System.out.println("Code : " + Code_commune_INSEE);
-		VilleDelete ville = new VilleDelete(Code_commune_INSEE);
+	public void delete(@RequestParam("Code_commune_INSEE") String codeCommuneINSEE) {
+		VilleDelete ville = new VilleDelete(codeCommuneINSEE);
 		ville.deleteVille();
 	}
 

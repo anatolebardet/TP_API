@@ -17,7 +17,7 @@ public class VillePut {
     }
 
     public void putVille() throws SQLException {
-        VilleDao ville = this.dao.getVilleDao();
-        ville.putVille(this.ville);
+        VilleDao villePut = this.dao.getVilleDao();
+        villePut.putVille(this.ville);
     }
 }
