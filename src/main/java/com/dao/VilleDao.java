@@ -30,7 +30,7 @@ public class VilleDao {
         String query = getQuery(attributes);
         Connection connexion;
         Statement statement = null;
-        ResultSet resultat;
+        ResultSet resultat=null;
         List<VilleFrance> villes = new ArrayList<>();
         try {
             connexion = daoFactory.getConnection();
@@ -50,6 +50,8 @@ public class VilleDao {
         }finally {
             assert statement != null;
             statement.close();
+            assert resultat != null;
+            resultat.close();
         }
         return villes;
     }
@@ -139,6 +141,8 @@ public class VilleDao {
         } finally {
             assert statement != null;
             statement.close();
+            assert resultat != null;
+            resultat.close();
         }
         return existe;
     }
