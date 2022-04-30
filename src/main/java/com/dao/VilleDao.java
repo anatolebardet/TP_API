@@ -9,73 +9,27 @@ import java.util.List;
 public class VilleDao {
 
     private final DaoFactory daoFactory;
-    public static final String AND = " AND ";
-    public static final String CODE = "Code_commune_INSEE";
-    public static final String NOM = "Nom_commune";
-    public static final String CODEP = "Code_postal";
-    public static final String LIBEL = "Libelle_acheminement";
-    public static final String LIGNE5 = "Ligne_5";
-    public static final String LAT = "Latitude";
-    public static final String LON = "Longitude";
+    private static final String AND = " AND ";
+    private static final String CODE = "Code_commune_INSEE";
+    private static final String NOM = "Nom_commune";
+    private static final String CODEP = "Code_postal";
+    private static final String LIBEL = "Libelle_acheminement";
+    private static final String LIGNE5 = "Ligne_5";
+    private static final String LAT = "Latitude";
+    private static final String LON = "Longitude";
+    private static final String[] ATTRIBUTES_NAMES = new String[]{CODE,NOM,CODEP,LIBEL,LIGNE5,LAT,LON};
 
 
     public VilleDao(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-/*
-    public List<VilleFrance> getVillesCP(String codePostal){
-        Connection connexion;
-        Statement statement;
-        ResultSet resultat;
-        List<VilleFrance> villes = new ArrayList<>();
-        try {
-            connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
-            resultat = statement.executeQuery("SELECT * FROM ville_france WHERE "+ CODEP+ "=" + codePostal + ";");
-            while (resultat.next()) {
-                villes.add(new VilleFrance(resultat.getString(Code),
-                        resultat.getString(Nom),
-                        resultat.getString(CodeP),
-                        resultat.getString(Libel),
-                        resultat.getString(Ligne5),
-                        resultat.getString(Lat),
-                        resultat.getString(Lon)));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return villes;
-    }
-*/
-    public List<VilleFrance> getAllVilles(){
-        Connection connexion;
-        Statement statement;
-        ResultSet resultat;
-        List<VilleFrance> villes = new ArrayList<>();
-        try {
-            connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
-            resultat = statement.executeQuery("SELECT * FROM ville_france ORDER BY Nom_Commune ASC;");
-            while (resultat.next()) {
-                villes.add(new VilleFrance(resultat.getString(CODE),
-                        resultat.getString(NOM),
-                        resultat.getString(CODEP),
-                        resultat.getString(LIBEL),
-                        resultat.getString(LIGNE5),
-                        resultat.getString(LAT),
-                        resultat.getString(LON)));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return villes;
-    }
 
     public List<VilleFrance> getVilles(String codeCommune, String nomCommune, String codePostal, String libelle, String ligne5,
-                                       String latitude, String longitude){
-        String query = getQuery(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
+                                       String latitude, String longitude) throws SQLException {
+        String[] attributes = new String[]{codeCommune,nomCommune,codePostal,libelle,ligne5,latitude,longitude};
+        String query = getQuery(attributes);
         Connection connexion;
-        Statement statement;
+        Statement statement = null;
         ResultSet resultat;
         List<VilleFrance> villes = new ArrayList<>();
         try {
@@ -93,76 +47,39 @@ public class VilleDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            assert statement != null;
+            statement.close();
         }
         return villes;
     }
 
-    public String getQuery(String codeCommune, String nomCommune, String codePostal, String libelle, String ligne5,
-    String latitude, String longitude){
-        String query="SELECT * from ville_france";
-        boolean andQuery = false;
-        if(codeCommune != null){
-            query += "Code_commune_INSEE="+codeCommune;
-            andQuery = true;
-        }
-        if(nomCommune != null){
-            if(andQuery){
-                query += AND + "Nom_commune=" + nomCommune;
-            }
-            else{
-                query += " WHERE Nom_commune=" + nomCommune;
-                andQuery = true;
+    public String getQuery(String[] attributes){
+        StringBuilder query= new StringBuilder("SELECT * from ville_france");
+        int cpt = 0;
+        for (String attribute : attributes) {
+            if (attribute != null) {
+                cpt++;
             }
         }
-        if(codePostal != null){
-            if(andQuery){
-                query += AND + "Code_postal=" + codePostal;
+        if(cpt>0) {
+            query.append(" WHERE ");
+            int test = 0;
+            while (attributes[test] == null) {
+                test += 1;
             }
-            else{
-                query += " WHERE Code_postal=" + codePostal;
-                andQuery = true;
-            }
-        }
-        if(libelle != null){
-            if(andQuery){
-                query += AND + "Libelle_acheminement=" + libelle;
-            }
-            else{
-                query += " WHERE Libelle_acheminement=" + libelle;
-                andQuery = true;
+            query.append(ATTRIBUTES_NAMES[test]).append("=").append(attributes[test]);
+            for (int j = test+1; j < ATTRIBUTES_NAMES.length; j++) {
+                if (attributes[j] != null) {
+                    query.append(AND).append(ATTRIBUTES_NAMES[j]).append("=").append(attributes[j]);
+                }
             }
         }
-        if(ligne5 != null){
-            if(andQuery){
-                query += AND + "Ligne_5=" + ligne5;
-            }
-            else{
-                query += " WHERE Ligne_5=" + ligne5;
-                andQuery = true;
-            }
-        }
-        if(latitude != null){
-            if(andQuery){
-                query += AND + LAT + latitude;
-            }
-            else{
-                query += " WHERE Latitude" + latitude;
-                andQuery = true;
-            }
-        }
-        if(longitude != null){
-            if(andQuery){
-                query += AND + LON + longitude;
-            }
-            else{
-                query += " WHERE Longitude" + longitude;
-            }
-        }
-        query += " ORDER BY Nom_Commune ASC;";
-        return query;
+        query.append(" ORDER BY Nom_Commune ASC;");
+        return query.toString();
     }
 
-    public void postVille(VilleFrance ville) {
+    public void postVille(VilleFrance ville) throws SQLException {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -179,11 +96,14 @@ public class VilleDao {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            assert preparedStatement != null;
+            preparedStatement.close();
         }
     }
 
 
-    public void deleteVille(String idDelete) {
+    public void deleteVille(String idDelete) throws SQLException {
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -193,6 +113,9 @@ public class VilleDao {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            assert preparedStatement != null;
+            preparedStatement.close();
         }
     }
 
@@ -213,6 +136,9 @@ public class VilleDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            assert statement != null;
+            statement.close();
         }
         return existe;
     }
@@ -226,8 +152,8 @@ public class VilleDao {
         }
     }
 
-    public void editVille(VilleFrance ville){
-        Connection connexion = null;
+    public void editVille(VilleFrance ville) throws SQLException {
+        Connection connexion;
         PreparedStatement preparedStatement = null;
         try {
             connexion = daoFactory.getConnection();
@@ -244,8 +170,10 @@ public class VilleDao {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            assert preparedStatement != null;
+            preparedStatement.close();
         }
 
     }
-
 }

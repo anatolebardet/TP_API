@@ -3,6 +3,8 @@ package com.form;
 import com.dao.DaoFactory;
 import com.dao.VilleDao;
 
+import java.sql.SQLException;
+
 public class VilleDelete {
     private String idDelete;
     private DaoFactory dao;
@@ -12,7 +14,7 @@ public class VilleDelete {
         this.dao = DaoFactory.getInstance();
     }
 
-    public void deleteVille(){
+    public void deleteVille() throws SQLException {
         VilleDao ville = this.dao.getVilleDao();
         ville.deleteVille(this.idDelete);
     }

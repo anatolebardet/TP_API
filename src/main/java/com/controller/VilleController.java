@@ -21,7 +21,7 @@ public class VilleController {
 								@RequestParam(required  = false,value="Libelle_acheminement") String libelle,
 								@RequestParam(required  = false,value="Ligne_5") String ligne5,
 								@RequestParam(required  = false,value="Latitude") String latitude,
-								@RequestParam(required  = false,value="Longitude") String longitude){
+								@RequestParam(required  = false,value="Longitude") String longitude) throws SQLException {
 
 		DaoFactory daoFactory = DaoFactory.getInstance();
 		VilleDao villeDao = daoFactory.getVilleDao();
@@ -37,7 +37,7 @@ public class VilleController {
 					@RequestParam("Libelle_acheminement") String libelle,
 					@RequestParam("Ligne_5") String ligne5,
 					@RequestParam("Latitude") String latitude,
-					@RequestParam("Longitude") String longitude) {
+					@RequestParam("Longitude") String longitude) throws SQLException {
 		VilleFrance ville = new VilleFrance(codeCommune, nomCommune, codePostal, libelle, ligne5, latitude, longitude);
 		VillePost villePost = new VillePost(ville);
 		villePost.postVille();
@@ -45,7 +45,7 @@ public class VilleController {
 
 	@DeleteMapping(value = "/ville")
 	@ResponseBody
-	public void delete(@RequestParam("Code_commune_INSEE") String codeCommuneINSEE) {
+	public void delete(@RequestParam("Code_commune_INSEE") String codeCommuneINSEE) throws SQLException {
 		VilleDelete ville = new VilleDelete(codeCommuneINSEE);
 		ville.deleteVille();
 	}
