@@ -1,10 +1,10 @@
 package com.dao;
 
-import com.entities.VilleFrance;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.entities.VilleFrance;
 
 public class VilleDao {
 
@@ -28,31 +28,24 @@ public class VilleDao {
                                        String latitude, String longitude) throws SQLException {
         String[] attributes = new String[]{codeCommune,nomCommune,codePostal,libelle,ligne5,latitude,longitude};
         String query = getQuery(attributes);
-        Connection connexion;
-        Statement statement = null;
-        ResultSet resultat=null;
         List<VilleFrance> villes = new ArrayList<>();
-        try {
-            connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
-            resultat = statement.executeQuery(query);
-            while (resultat.next()) {
-                villes.add(new VilleFrance(resultat.getString(CODE),
-                        resultat.getString(NOM),
-                        resultat.getString(CODEP),
-                        resultat.getString(LIBEL),
-                        resultat.getString(LIGNE5),
-                        resultat.getString(LAT),
-                        resultat.getString(LON)));
+        try(Connection connexion = daoFactory.getConnection(); Statement statement = connexion.createStatement()) {
+            try (ResultSet resultat = statement.executeQuery(query)) {
+                while (resultat.next()) {
+                    villes.add(new VilleFrance(resultat.getString(CODE),
+                            resultat.getString(NOM),
+                            resultat.getString(CODEP),
+                            resultat.getString(LIBEL),
+                            resultat.getString(LIGNE5),
+                            resultat.getString(LAT),
+                            resultat.getString(LON)));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            assert statement != null;
-            statement.close();
-            assert resultat != null;
-            resultat.close();
-        }
+        }  catch (SQLException e){
+                e.printStackTrace();
+            }
         return villes;
     }
 
@@ -123,26 +116,19 @@ public class VilleDao {
 
     public boolean villeExiste(String codeCommune) throws SQLException {
         boolean existe = false;
-        Connection connexion;
-        Statement statement = null;
-        ResultSet resultat = null;
-        try {
-            connexion = daoFactory.getConnection();
-            statement = connexion.createStatement();
-            resultat = statement.executeQuery("SELECT * FROM ville_france WHERE Code_commune_INSEE=" +
-                    codeCommune+";");
-            while (resultat.next()) {
-                if(resultat.getString(CODE).equals(codeCommune)){
-                    existe = true;
+        try(Connection connexion = daoFactory.getConnection(); Statement statement = connexion.createStatement() ){
+            try(ResultSet resultat = statement.executeQuery("SELECT * FROM ville_france WHERE Code_commune_INSEE=" +
+                    codeCommune+";");) {
+                while (resultat.next()) {
+                    if (resultat.getString(CODE).equals(codeCommune)) {
+                        existe = true;
+                    }
                 }
-            }
+            } catch (SQLException e){
+                    e.printStackTrace();
+                }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            assert statement != null;
-            statement.close();
-            assert resultat != null;
-            resultat.close();
         }
         return existe;
     }
